@@ -1,4 +1,5 @@
 from cmath import pi
+from copy import deepcopy
 from shutil import move
 import numpy as np;
 
@@ -16,7 +17,9 @@ class GameState():
         ])
         self.whiteToMove=True
         self.moveLog = []
-
+        self.whiteKingsPosition = (0,4)
+        self.blackKingsPosition = (7,4)
+        self.gameOver = False
     def printBoard(self):
         for i in range(len(self.board)):
             for j in range(len(self.board[i])):
@@ -28,6 +31,12 @@ class GameState():
         self.board[move.endRow][move.endCol] = move.pieceMoved
         self.moveLog.append(move)
         self.whiteToMove = not self.whiteToMove
+        if move.pieceMoved == "kl":
+            self.whiteKingsPosition = (move.endRow, move.endCol)
+        elif move.pieceMoved == "kd":
+            self.blackKingsPosition = (move.endRow, move.endCol)
+
+
 
     def undoMove(self):
         if len(self.moveLog)!=0:
@@ -35,6 +44,10 @@ class GameState():
             self.board[lastMove.startRow][lastMove.startCol] = lastMove.pieceMoved
             self.board[lastMove.endRow][lastMove.endCol] = lastMove.pieceCaptured
             self.whiteToMove = not self.whiteToMove
+            if lastMove.pieceMoved == "kl":
+                self.whiteKingsPosition = (lastMove.startRow, lastMove.startCol)
+            elif lastMove.pieceMoved == "kd":
+                self.blackKingsPosition = (lastMove.startRow, lastMove.startCol)
 
     def showPaths(self,move):
         currentpiece = move.pieceMoved
@@ -59,11 +72,47 @@ class GameState():
             self.__getRookMoves(move.startRow, move.startCol, currentmoves)
         elif currentpiece[0] =="q":
             self.__getQueenMoves(move.startRow, move.startCol, currentmoves)
+        elif currentpiece[0] =="k":
+            self.__getKingMoves(move.startRow, move.startCol, currentmoves)
 
-        return currentmoves
+        validmoves = self.getValidMoves()
+        filteredmoves = []
+        for move in currentmoves:
+            if move in validmoves:
+                filteredmoves.append(move)
+        return filteredmoves
+
+    def inCheck(self):
+        if self.whiteToMove:
+            r, c = self.whiteKingsPosition
+        else:
+            r, c = self.blackKingsPosition
+
+        self.whiteToMove = not self.whiteToMove
+        moves = self.getAllMoves()
+        self.whiteToMove = not self.whiteToMove
+        for move in moves:
+            if move.endRow == r and move.endCol == c:
+                return True
+        return False
+            
 
     def getValidMoves(self):
-        return self.getAllMoves()
+        allmoves = self.getAllMoves()
+        for i in range(len(allmoves)-1, -1,-1):
+            self.movePiece(allmoves[i])
+            self.whiteToMove = not self.whiteToMove
+            if self.inCheck():
+                allmoves.remove(allmoves[i])
+            self.whiteToMove = not self.whiteToMove
+            self.undoMove()
+
+        if len(allmoves) ==0:
+            self.gameOver = True
+        else:
+            self.gameOver = False
+        
+        return allmoves
 
     def getAllMoves(self):
         moves = []
@@ -263,7 +312,24 @@ class GameState():
                     moves.append(Movement((row,col),(row-1,col-1), self.board))
             if self.board[row-1][col] == "--" or self.board[row-1][col][1]==opponentpiececolor:
                     moves.append(Movement((row,col),(row-1,col), self.board))
+        if row+1<=7:#Bottom Row
+            if col+1<=7:
+                if self.board[row+1][col+1] == "--" or self.board[row+1][col+1][1]==opponentpiececolor:
+                    moves.append(Movement((row,col),(row+1,col+1), self.board))
+            if col-1>=0:
+                if self.board[row+1][col-1] == "--" or self.board[row+1][col-1][1]==opponentpiececolor:
+                    moves.append(Movement((row,col),(row+1,col-1), self.board))
+            if self.board[row+1][col] == "--" or self.board[row+1][col][1]==opponentpiececolor:
+                    moves.append(Movement((row,col),(row+1,col), self.board))
 
+        #Current Row
+        if col+1<=7:
+                if self.board[row][col+1] == "--" or self.board[row][col+1][1]==opponentpiececolor:
+                    moves.append(Movement((row,col),(row,col+1), self.board))
+        if col-1>=0:
+            if self.board[row][col-1] == "--" or self.board[row][col-1][1]==opponentpiececolor:
+                moves.append(Movement((row,col),(row,col-1), self.board))
+        
 
 class Movement:
     ranksToRows = {"1":7, "2":6, "3":5, "4":4,

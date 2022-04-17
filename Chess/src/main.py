@@ -1,4 +1,5 @@
 from pydoc import cli
+import random
 import engine
 import pygame
 
@@ -45,11 +46,23 @@ def drawRanks(win,board):
             rank = move.getRankFile(j, i,);
             text = FONT.render(rank, True, (148, 100, 41))
             win.blit(text, (i*SQ_SIZE,j*SQ_SIZE))
-            
 
-def drawGameState(win, state, paths):
+def drawCheck(win, state, inCheck):
+    if not inCheck:
+        return
+    else:       
+        if state.whiteToMove:
+            (r, c) = state.whiteKingsPosition
+        else:
+            (r,c) = state.blackKingsPosition
+        pygame.draw.rect(win,(245, 102, 66), (c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
+
+
+def drawGameState(win, state, paths, inCheck):
     drawBoard(win)
     drawPaths(win, paths)
+    drawCheck(win, state, inCheck)
     drawPieces(win, state.board)
     drawRanks(win, state.board)
     
@@ -66,38 +79,59 @@ def main():
    selected= ()
    clicks = []
    paths = []
+   inCheck = False
    while running: 
         for e in pygame.event.get():
+            ############################
+            #AI Part
+            if not state.whiteToMove:
+                validMoves = state.getValidMoves()
+                if len(validMoves)>0:
+                    move = random.choice(validMoves)
+                    state.movePiece(move)
+                    moveMade = True
+                else: 
+                    state.gameOver= True
+            #############################
             if e.type == pygame.QUIT:
                running = False
             elif e.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                r = pos[1] // SQ_SIZE
-                c = pos[0] // SQ_SIZE
-                if selected == (r,c):
-                    selected = ()
-                    clicks = []
-                else:
-                    paths = state.showPaths(engine.Movement((r,c),(0, 0),state.board))
-                    selected= (r, c)
-                    clicks.append(selected)
-                if len(clicks) ==2:
-                    move = engine.Movement(clicks[0], clicks[1],state.board)
-                    print(move.getNotation())
-                    if move in validMoves: 
-                        state.movePiece(move)
-                        moveMade = True
-                    selected = ()
-                    clicks = []
+                if not state.gameOver:
+                    pos = pygame.mouse.get_pos()
+                    r = pos[1] // SQ_SIZE
+                    c = pos[0] // SQ_SIZE
+                    if selected == (r,c):
+                        selected = ()
+                        clicks = []
+                    else:
+                        paths = state.showPaths(engine.Movement((r,c),(0, 0),state.board))
+                        selected= (r, c)
+                        clicks.append(selected)
+                    if len(clicks) ==2:
+                        move = engine.Movement(clicks[0], clicks[1],state.board)
+                        print(move.getNotation())
+                        if move in validMoves: 
+                            state.movePiece(move)
+                            moveMade = True
+                            selected = ()
+                            clicks = []
+                        else:
+                            clicks = [selected]
             elif e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_z:
                     state.undoMove()
                     moveMade = True
+            
         if moveMade:
             validMoves= state.getValidMoves()
             moveMade = False
-
-        drawGameState(win, state, paths)
+        if state.inCheck():
+            inCheck = True
+        else:
+            inCheck = False
+        if state.gameOver:
+            print("Checkmate")
+        drawGameState(win, state, paths, inCheck)
         clock.tick(FPS)
         pygame.display.flip()
         
