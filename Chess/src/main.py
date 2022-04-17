@@ -3,6 +3,7 @@ import engine
 import pygame
 
 pygame.init()
+FONT = pygame.font.Font('freesansbold.ttf', 11)
 WIDTH = 400
 ROWS = 8
 SQ_SIZE = WIDTH // ROWS
@@ -31,10 +32,27 @@ def drawPieces(win, board):
             if board[j][i] != "--":
                 win.blit(IMAGES[board[j][i]], (i*SQ_SIZE,j*SQ_SIZE))
 
+def drawPaths(win,moves):
+    if moves is None:
+        return
+    for x in moves:
+        pygame.draw.rect(win,(133,230,160), (x.endCol*SQ_SIZE, x.endRow*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
-def drawGameState(win, state):
+def drawRanks(win,board):
+    move = engine.Movement((0,0), (0,0),board)
+    for i in range(ROWS):
+        for j in range(ROWS):
+            rank = move.getRankFile(j, i,);
+            text = FONT.render(rank, True, (148, 100, 41))
+            win.blit(text, (i*SQ_SIZE,j*SQ_SIZE))
+            
+
+def drawGameState(win, state, paths):
     drawBoard(win)
+    drawPaths(win, paths)
     drawPieces(win, state.board)
+    drawRanks(win, state.board)
+    
 
 def main():
    win = pygame.display.set_mode((WIDTH, WIDTH)) 
@@ -47,6 +65,7 @@ def main():
    running = True
    selected= ()
    clicks = []
+   paths = []
    while running: 
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
@@ -59,6 +78,7 @@ def main():
                     selected = ()
                     clicks = []
                 else:
+                    paths = state.showPaths(engine.Movement((r,c),(0, 0),state.board))
                     selected= (r, c)
                     clicks.append(selected)
                 if len(clicks) ==2:
@@ -77,7 +97,7 @@ def main():
             validMoves= state.getValidMoves()
             moveMade = False
 
-        drawGameState(win, state)
+        drawGameState(win, state, paths)
         clock.tick(FPS)
         pygame.display.flip()
         
