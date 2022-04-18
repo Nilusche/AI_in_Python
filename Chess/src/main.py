@@ -1,5 +1,5 @@
 from pydoc import cli
-import random
+from ChessAi import *
 
 import numpy as np
 import engine
@@ -47,7 +47,9 @@ def drawPieces(win, board):
 def drawPaths(win,moves):
     if moves is None:
         return
+    
     for x in moves:
+        pygame.draw.rect(win,(255, 245, 109), (x.startCol*SQ_SIZE, x.startRow*SQ_SIZE, SQ_SIZE, SQ_SIZE))
         pygame.draw.rect(win,(133,230,160), (x.endCol*SQ_SIZE, x.endRow*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
 def drawRanks(win,board):
@@ -93,17 +95,15 @@ def main():
    while running: 
         for e in pygame.event.get():
             ############################
-            #AI Part
-            '''
+            #AI Moves
             if not state.whiteToMove:
                 validMoves = state.getValidMoves()
                 if len(validMoves)>0:
-                    move = random.choice(validMoves)
+                    move = getRandomMove(validMoves)
                     state.movePiece(move)
                     moveMade = True
                 else: 
                     state.gameOver= True
-            '''
             #############################
             if e.type == pygame.QUIT:
                running = False
