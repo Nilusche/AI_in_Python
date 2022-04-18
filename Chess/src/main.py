@@ -1,5 +1,7 @@
 from pydoc import cli
 import random
+
+import numpy as np
 import engine
 import pygame
 
@@ -10,7 +12,16 @@ ROWS = 8
 SQ_SIZE = WIDTH // ROWS
 FPS = 60
 IMAGES = {}
-
+BOARD = np.array([
+            ["rd", "nd", "bd", "qd", "kd", "bd", "nd", "rd"],
+            ["pd", "pd", "pd", "pd", "pd", "pd", "pd", "pd"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["pl", "pl", "pl", "pl", "pl", "pl", "pl", "pl"],
+            ["rl", "nl", "bl", "ql", "kl", "bl", "nl", "rl"]
+        ])
 def loadImages():
     pieces = ["bd", "bl", "kd", "kl", "nd", "nl", "pd", "pl", "qd","ql","rd", "rl"]
     for piece in pieces:
@@ -57,14 +68,13 @@ def drawCheck(win, state, inCheck):
             (r,c) = state.blackKingsPosition
         pygame.draw.rect(win,(245, 102, 66), (c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
-
-
 def drawGameState(win, state, paths, inCheck):
     drawBoard(win)
     drawPaths(win, paths)
     drawCheck(win, state, inCheck)
     drawPieces(win, state.board)
     drawRanks(win, state.board)
+        
     
 
 def main():
@@ -84,6 +94,7 @@ def main():
         for e in pygame.event.get():
             ############################
             #AI Part
+            '''
             if not state.whiteToMove:
                 validMoves = state.getValidMoves()
                 if len(validMoves)>0:
@@ -92,6 +103,7 @@ def main():
                     moveMade = True
                 else: 
                     state.gameOver= True
+            '''
             #############################
             if e.type == pygame.QUIT:
                running = False
@@ -110,12 +122,21 @@ def main():
                     if len(clicks) ==2:
                         move = engine.Movement(clicks[0], clicks[1],state.board)
                         print(move.getNotation())
-                        if move in validMoves: 
-                            state.movePiece(move)
-                            moveMade = True
-                            selected = ()
-                            clicks = []
-                        else:
+                        for i in range(len(validMoves)):
+                            if move == validMoves[i]: 
+                                if validMoves[i].isPromotion:
+                                    validOptions = ['q', 'r', 'n','b']
+                                    piece = None
+                                    while piece not in validOptions:
+                                        print("Press q for Queen, r for Rook, n for knight or b for Bishop")
+                                        piece = input()
+                                    validMoves[i].promotion = piece
+                                state.movePiece(validMoves[i])
+                                moveMade = True
+                                selected = ()
+                                clicks = []
+                                
+                        if not moveMade:
                             clicks = [selected]
             elif e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_z:

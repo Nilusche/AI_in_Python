@@ -20,6 +20,9 @@ class GameState():
         self.whiteKingsPosition = (0,4)
         self.blackKingsPosition = (7,4)
         self.gameOver = False
+        self.currentCasteling = Castleling(True, True, True, True)
+        self.castleLog = [deepcopy(self.currentCasteling)]
+
     def printBoard(self):
         for i in range(len(self.board)):
             for j in range(len(self.board[i])):
@@ -36,7 +39,40 @@ class GameState():
         elif move.pieceMoved == "kd":
             self.blackKingsPosition = (move.endRow, move.endCol)
 
+        if move.isPromotion:
+            self.board[move.endRow][move.endCol] = move.promotion + move.pieceMoved[1]
 
+        if move.isCastleMove:
+            if move.endCol - move.startCol ==2: #Kingside Castle
+                self.board[move.endRow][move.endCol-1] = self.board[move.endRow][move.endCol+1]
+                self.board[move.endRow][move.endCol+1] = "--"
+            else: # Queenside Castle
+                self.board[move.endRow][move.endCol+1] = self.board[move.endRow][move.endCol-2]
+                self.board[move.endRow][move.endCol-2] = "--"
+
+
+        #Caste Rights
+        if move.pieceMoved == 'kl':
+            self.currentCasteling.lks = False
+            self.currentCasteling.lqs = False
+        elif move.pieceMoved =='kd':
+            self.currentCasteling.dks = False
+            self.currentCasteling.dqs = False
+        elif move.pieceMoved == "rl":
+            if move.startRow == 7:
+                if move.startCol ==0:
+                    self.currentCasteling.lqs = False
+                elif move.startCol ==7:
+                    self.currentCasteling.lks = False
+        elif move.pieceMoved == "rd":
+            if move.startRow == 0:
+                if move.startCol ==0:
+                    self.currentCasteling.dqs = False
+                elif move.startCol ==7:
+                    self.currentCasteling.dks = False
+        
+        self.castleLog.append(deepcopy(self.currentCasteling))
+                
 
     def undoMove(self):
         if len(self.moveLog)!=0:
@@ -48,6 +84,19 @@ class GameState():
                 self.whiteKingsPosition = (lastMove.startRow, lastMove.startCol)
             elif lastMove.pieceMoved == "kd":
                 self.blackKingsPosition = (lastMove.startRow, lastMove.startCol)
+            
+            self.castleLog.pop()
+            self.currentCasteling =deepcopy(self.castleLog[-1])
+
+            #Undo castle move
+            if lastMove.isCastleMove:
+                if lastMove.endCol - lastMove.startCol  == 2:
+                    self.board[lastMove.endRow][lastMove.endCol+1] = self.board[lastMove.endRow][lastMove.endCol-1]
+                    self.board[lastMove.endRow][lastMove.endCol-1] ="--"
+                else:
+                    self.board[lastMove.endRow][lastMove.endCol-2] = self.board[lastMove.endRow][lastMove.endCol+1]
+                    self.board[lastMove.endRow][lastMove.endCol+1] ="--"
+
 
     def showPaths(self,move):
         currentpiece = move.pieceMoved
@@ -75,6 +124,12 @@ class GameState():
         elif currentpiece[0] =="k":
             self.__getKingMoves(move.startRow, move.startCol, currentmoves)
 
+        if self.whiteToMove:
+            self.getCastleMoves(self.whiteKingsPosition[0], self.whiteKingsPosition[1], currentmoves)
+        else:
+            self.getCastleMoves(self.blackKingsPosition[0], self.blackKingsPosition[1], currentmoves)
+
+
         validmoves = self.getValidMoves()
         filteredmoves = []
         for move in currentmoves:
@@ -96,9 +151,25 @@ class GameState():
                 return True
         return False
             
+    def isUnderAttack(self, row, col):
+        self.whiteToMove = not self.whiteToMove
+        opponentMoves = self.getAllMoves()
+        self.whiteToMove = not self.whiteToMove
+
+        for move in opponentMoves:
+            if move.endRow == row and move.endCol == col:
+                return True
+        return False
+
 
     def getValidMoves(self):
         allmoves = self.getAllMoves()
+        tempCastleRights = deepcopy(self.currentCasteling)
+        if self.whiteToMove:
+            self.getCastleMoves(self.whiteKingsPosition[0], self.whiteKingsPosition[1], allmoves)
+        else:
+            self.getCastleMoves(self.blackKingsPosition[0], self.blackKingsPosition[1], allmoves)
+
         for i in range(len(allmoves)-1, -1,-1):
             self.movePiece(allmoves[i])
             self.whiteToMove = not self.whiteToMove
@@ -112,6 +183,7 @@ class GameState():
         else:
             self.gameOver = False
         
+        self.currentCasteling = tempCastleRights
         return allmoves
 
     def getAllMoves(self):
@@ -329,7 +401,35 @@ class GameState():
         if col-1>=0:
             if self.board[row][col-1] == "--" or self.board[row][col-1][1]==opponentpiececolor:
                 moves.append(Movement((row,col),(row,col-1), self.board))
+
+
         
+
+    def getCastleMoves(self, row, col,moves):
+        if self.isUnderAttack(row, col):
+            return
+        if (self.whiteToMove and self.currentCasteling.lks) or (not self.whiteToMove and self.currentCasteling.dks):
+            self.getKingsideCastle(row, col, moves,)
+        if (self.whiteToMove and self.currentCasteling.lqs) or (not self.whiteToMove and self.currentCasteling.dqs):
+            self.getQueensideCastle(row,col,moves)
+        
+
+    def getKingsideCastle(self,row, col,moves):
+        if self.board[row][col+1] == "--" and self.board[row][col+2] =="--":
+            if not self.isUnderAttack(row, col+1) and not self.isUnderAttack(row, col+2):
+                moves.append(Movement((row, col),(row,col+2), self.board,isCastleMove=True))
+
+    def getQueensideCastle(self,row, col,moves):
+        if self.board[row][col-1] == "--" and self.board[row][col-2] =="--" and self.board[row][col-3]:
+            if not self.isUnderAttack(row, col-1) and not self.isUnderAttack(row, col-2):
+                 moves.append(Movement((row, col),(row,col-2), self.board,isCastleMove=True))
+
+class Castleling:
+    def __init__(self, lks, dks, lqs, dqs):
+        self.lks = lks
+        self.dks = dks
+        self.lqs = lqs
+        self.dqs = dqs        
 
 class Movement:
     ranksToRows = {"1":7, "2":6, "3":5, "4":4,
@@ -338,14 +438,19 @@ class Movement:
     filesToCols = {"a":0, "b":1, "c":2, "d":3,
                    "e":4, "f":5, "g":6, "h":7}
     colsToFiles = {v:k for k,v in filesToCols.items()}
-    def __init__(self, start, end, board):
+    def __init__(self, start, end, board, isCastleMove = False):
         self.startRow = start[0]
         self.startCol = start[1]
         self.endRow= end[0]
         self.endCol= end[1]
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = board[self.endRow][self.endCol]
+        self.isPromotion = False
+        self.promotion = 'q'
+        if (self.pieceMoved =="pl" and self.endRow == 0) or (self.pieceMoved=="pd"and self.endRow == 7):
+            self.isPromotion = True
         self.moveID = self.startRow * 1000 + self.startCol* 100 + self.endRow * 10 +self.endCol 
+        self.isCastleMove = isCastleMove
 
     def getRankFile(self, r, c):
         return self.colsToFiles[c]+ self.rowsToRanks[r] 
