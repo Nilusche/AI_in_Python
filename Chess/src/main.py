@@ -76,7 +76,6 @@ def drawGameState(win, state, paths, inCheck):
     drawCheck(win, state, inCheck)
     drawPieces(win, state.board)
     drawRanks(win, state.board)
-        
     
 
 def main():
@@ -104,6 +103,14 @@ def main():
                     moveMade = True
                 else: 
                     state.gameOver= True
+            '''else:
+                validMoves = state.getValidMoves()
+                if len(validMoves)>0:
+                    move = getRandomMove(validMoves)
+                    state.movePiece(move)
+                    moveMade = True
+                else: 
+                    state.gameOver= True'''
             #############################
             if e.type == pygame.QUIT:
                running = False
