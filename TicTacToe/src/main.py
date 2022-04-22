@@ -1,7 +1,7 @@
 import pygame
 from minimax import TicTacToe
 
-
+#Testcommit
 pygame.init()
 FONT = pygame.font.Font('freesansbold.ttf', 11)
 WIDTH = 300
