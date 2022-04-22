@@ -3,36 +3,36 @@ class TicTacToe:
     __player  = "X"
     __opponent = "O"
     def __init__(self, board):
-        self.__board = board
+        self.board = board
 
-    def evaluate_game_state(self,player):
+    def evaluate_game_state(self,player="X"):
         if player == "X":
             opponent = "O"
         else:
             opponent = "X"
         for row in range(3):
-            if self.__board[row][0]==self.__board[row][1] and self.__board[row][1] == self.__board[row][2]:
-                if self.__board[row][0] == player:
+            if self.board[row][0]==self.board[row][1] and self.board[row][1] == self.board[row][2]:
+                if self.board[row][0] == player:
                     return 10
-                elif self.__board[row][0] == opponent:
+                elif self.board[row][0] == opponent:
                     return -10
         for col in range(3):
-            if self.__board[0][col]==self.__board[1][col] and self.__board[1][col] == self.__board[2][col]:
-                if self.__board[0][col] == player:
+            if self.board[0][col]==self.board[1][col] and self.board[1][col] == self.board[2][col]:
+                if self.board[0][col] == player:
                     return 10
-                elif self.__board[0][col] == opponent:
+                elif self.board[0][col] == opponent:
                     return -10
 
-        if self.__board[0][0] == self.__board[1][1] and self.__board[1][1] == self.__board[2][2]:
-            if self.__board[0][0] == player:
+        if self.board[0][0] == self.board[1][1] and self.board[1][1] == self.board[2][2]:
+            if self.board[0][0] == player:
                 return 10
-            elif self.__board[0][0] == opponent:
+            elif self.board[0][0] == opponent:
                 return -10
         
-        if self.__board[0][2] == self.__board[1][1] and self.__board[1][1] == self.__board[2][0]:
-            if self.__board[0][2] == player:
+        if self.board[0][2] == self.board[1][1] and self.board[1][1] == self.board[2][0]:
+            if self.board[0][2] == player:
                 return 10
-            elif self.__board[0][2] == opponent:
+            elif self.board[0][2] == opponent:
                 return -10
         
         return 0
@@ -40,7 +40,7 @@ class TicTacToe:
     def game_not_ended(self):
         for i in range(3):
             for j in range(3):
-                if self.__board[i][j] == '_':
+                if self.board[i][j] == '_':
                     return True
         return False
 
@@ -57,12 +57,12 @@ class TicTacToe:
             best = -1000
             for i in range(3):
                 for j in range(3):
-                    if self.__board[i][j] == "_":
-                        self.__board[i][j] = self.__player
+                    if self.board[i][j] == "_":
+                        self.board[i][j] = self.__player
                         val= max(best, self.minimax(depth+1, not isMax,alpha,beta,player))
                         best = max(best, val)
                         alpha = max(alpha,best)
-                        self.__board[i][j] = "_"
+                        self.board[i][j] = "_"
                         if beta <= alpha:
                             break
             return best
@@ -70,12 +70,12 @@ class TicTacToe:
             best = 1000
             for i in range(3):
                 for j in range(3):
-                    if self.__board[i][j] == "_":
-                        self.__board[i][j] = self.__opponent
+                    if self.board[i][j] == "_":
+                        self.board[i][j] = self.__opponent
                         val= min(best, self.minimax(depth+1, not isMax, alpha, beta,player))
                         best = min(best, val)
                         alpha = min(alpha,best)
-                        self.__board[i][j] = "_"
+                        self.board[i][j] = "_"
                         if beta <= alpha:
                             break
             return best
@@ -85,23 +85,23 @@ class TicTacToe:
         best_move = (None, None)
         for i in range(3):
             for j in range(3):
-                if self.__board[i][j] == '_':
-                    self.__board[i][j] = player
+                if self.board[i][j] == '_':
+                    self.board[i][j] = player
                     move_value = self.minimax( 0, False, -1000, 1000, player)
-                    self.__board[i][j] = '_'
+                    self.board[i][j] = '_'
                     if move_value > best_value:
                         best_move = (i, j)
                         best_value = move_value
-        print("The value of the best Move is: ", best_value)
+        #print("The value of the best Move is: ", best_value)
         return best_move
 
 
-board = [
+'''board = [
     [ 'X', 'O', 'X' ],
-    [ 'O', 'X', 'O' ],
+    [ 'O', 'O', 'X' ],
     [ '_', '_', '_' ]
 ]
 tictacttoe = TicTacToe(board)
 
-best_move = tictacttoe.find_best_move("O")
-print(best_move[0]," ",  best_move[1])
+#best_move = tictacttoe.find_best_move("O")
+print(best_move[0]," ",  best_move[1]) '''
