@@ -86,7 +86,6 @@ def main():
                 game.board[row][col] = "O"
             Humanturn = True
             draw_game(win, game.board)
-        #AI vs AI
         elif game.evaluate_game_state() in [10, -10]:
             draw_game(win, game.board)
             if game.evaluate_game_state("O") == 10:
@@ -96,7 +95,8 @@ def main():
         elif not game.game_not_ended() and game.evaluate_game_state() == 0:
             draw_game(win, game.board)
             draw_text(win, "Draw")
-            
+        #AI vs AI
+        #include if you want to play AI vs AI
         '''
         elif Humanturn and game.evaluate_game_state() not in [10, -10]:
             best_move = game.find_best_move("X")
