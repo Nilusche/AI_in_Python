@@ -77,9 +77,9 @@ def drawGameState(win, state, paths, inCheck):
     drawPieces(win, state.board)
     drawRanks(win, state.board)
 
-def draw_end(win):
+def draw_end(win, endmessage):
     font = pygame.font.Font('freesansbold.ttf', 25)
-    text = font.render("Checkmate, Game ended", True, pygame.Color('Brown'))
+    text = font.render(endmessage, True, pygame.Color('Brown'))
     location = pygame.Rect(0,0, WIDTH, WIDTH).move(WIDTH/2 - text.get_width()/2, WIDTH/2 - text.get_height()/2)
     win.blit(text, location)
 
@@ -168,7 +168,10 @@ def main():
             inCheck = False
         if state.gameOver:
             drawGameState(win, state, paths, inCheck)
-            draw_end(win)
+            if state.stalemate:
+                draw_end(win,"Stalemate, Game ended")
+            else:
+                draw_end(win, "Checkmate Game ended")
         else:
             drawGameState(win, state, paths, inCheck)
         

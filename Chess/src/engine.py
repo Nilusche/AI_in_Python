@@ -22,6 +22,7 @@ class GameState():
         self.gameOver = False
         self.currentCasteling = Castleling(True, True, True, True)
         self.castleLog = [deepcopy(self.currentCasteling)]
+        self.stalemate = False
 
     def printBoard(self):
         for i in range(len(self.board)):
@@ -180,6 +181,8 @@ class GameState():
 
         if len(allmoves) ==0:
             self.gameOver = True
+            if not self.inCheck():
+                self.stalemate = True
         else:
             self.gameOver = False
         
