@@ -79,22 +79,21 @@ def main():
                     if game.board[col][row] == "_":
                         game.board[col][row] = "X"
                         Humanturn = False
-        if game.game_not_ended():
-            if not Humanturn and game.evaluate_game_state() not in [10, -10]:       
-                best_move = game.find_best_move("O")
-                row, col = best_move
-                if best_move != (None, None):
-                    game.board[row][col] = "O"
-                Humanturn = True
-                draw_game(win, game.board)
-            #AI vs AI
-            elif game.evaluate_game_state() in [10, -10]:
-                draw_game(win, game.board)
-                if game.evaluate_game_state("O") == 10:
-                    draw_text(win, "O has won")
-                else:
-                    draw_text(win, "X has won")
-        else:
+        if not Humanturn and game.evaluate_game_state() not in [10, -10]:       
+            best_move = game.find_best_move("O")
+            row, col = best_move
+            if best_move != (None, None):
+                game.board[row][col] = "O"
+            Humanturn = True
+            draw_game(win, game.board)
+        #AI vs AI
+        elif game.evaluate_game_state() in [10, -10]:
+            draw_game(win, game.board)
+            if game.evaluate_game_state("O") == 10:
+                draw_text(win, "O has won")
+            else:
+                draw_text(win, "X has won")
+        elif not game.game_not_ended() and game.evaluate_game_state() == 0:
             draw_game(win, game.board)
             draw_text(win, "Draw")
             
