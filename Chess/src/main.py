@@ -76,7 +76,12 @@ def drawGameState(win, state, paths, inCheck):
     drawCheck(win, state, inCheck)
     drawPieces(win, state.board)
     drawRanks(win, state.board)
-    
+
+def draw_end(win):
+    font = pygame.font.Font('freesansbold.ttf', 25)
+    text = font.render("Checkmate, Game ended", True, pygame.Color('Brown'))
+    location = pygame.Rect(0,0, WIDTH, WIDTH).move(WIDTH/2 - text.get_width()/2, WIDTH/2 - text.get_height()/2)
+    win.blit(text, location)
 
 def main():
    win = pygame.display.set_mode((WIDTH, WIDTH)) 
@@ -92,26 +97,30 @@ def main():
    paths = []
    inCheck = False
    while running: 
+        ############################
+        #AI Moves
+        if not state.whiteToMove:
+            validMoves = state.getValidMoves()
+            if len(validMoves)>0:
+                move = getRandomMove(validMoves)
+                state.movePiece(move)
+                moveMade = True
+            else: 
+                state.gameOver= True
+        '''
+        else:
+            validMoves = state.getValidMoves()
+            if len(validMoves)>0:
+                move = getRandomMove(validMoves)
+                state.movePiece(move)
+                moveMade = True
+            else: 
+                state.gameOver= True
+        
+        pygame.time.wait(500)
+        '''
+        #############################
         for e in pygame.event.get():
-            ############################
-            #AI Moves
-            if not state.whiteToMove:
-                validMoves = state.getValidMoves()
-                if len(validMoves)>0:
-                    move = getRandomMove(validMoves)
-                    state.movePiece(move)
-                    moveMade = True
-                else: 
-                    state.gameOver= True
-            '''else:
-                validMoves = state.getValidMoves()
-                if len(validMoves)>0:
-                    move = getRandomMove(validMoves)
-                    state.movePiece(move)
-                    moveMade = True
-                else: 
-                    state.gameOver= True'''
-            #############################
             if e.type == pygame.QUIT:
                running = False
             elif e.type == pygame.MOUSEBUTTONDOWN:
@@ -158,8 +167,11 @@ def main():
         else:
             inCheck = False
         if state.gameOver:
-            print("Checkmate")
-        drawGameState(win, state, paths, inCheck)
+            drawGameState(win, state, paths, inCheck)
+            draw_end(win)
+        else:
+            drawGameState(win, state, paths, inCheck)
+        
         clock.tick(FPS)
         pygame.display.flip()
         
