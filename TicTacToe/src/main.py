@@ -1,3 +1,4 @@
+from random import randrange
 import pygame
 from minimax import TicTacToe
 
@@ -9,11 +10,14 @@ ROWS = 3
 SQ_SIZE = WIDTH // ROWS
 FPS = 60
 IMAGES = {}
-BOARD = [
+initial_board = [
     [ '_', '_', '_' ],
     [ '_', '_', '_' ],
     [ '_', '_', '_' ]
 ]
+row = randrange(2)
+col = randrange(2)
+initial_board[row][col] = "O"
 
 def load_images():
     pieces = ["X", "O"]
@@ -50,10 +54,13 @@ def main():
     clock = pygame.time.Clock();
     win.fill(pygame.Color("white"))
     load_images()
-    game = TicTacToe(BOARD)
+    game = TicTacToe(initial_board)
+    draw_game(win, game.board)
+    pygame.display.flip()
     running = True
-    Humanturn = False
+    Humanturn = True
     while running:
+        
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 running = False
@@ -71,7 +78,6 @@ def main():
                 game.board[row][col] = "O"
             Humanturn = True
         #AI vs AI
-        '''
         elif Humanturn and game.evaluate_game_state() not in [10, -10]:
             best_move = game.find_best_move("X")
             row, col = best_move
@@ -79,8 +85,7 @@ def main():
                 game.board[row][col] = "X"
             Humanturn = False
         
-        pygame.time.wait(800)
-        '''
+        pygame.time.wait(600)
         draw_game(win, game.board)
         pygame.display.flip()
         clock.tick(FPS)
