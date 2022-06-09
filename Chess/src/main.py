@@ -99,10 +99,11 @@ def main():
    while running: 
         ############################
         #AI Moves
+        
         if not state.whiteToMove:
             validMoves = state.getValidMoves()
             if len(validMoves)>0:
-                move = getRandomMove(validMoves)
+                move = getStockfishMove(validMoves)
                 state.movePiece(move)
                 moveMade = True
             else: 
@@ -148,6 +149,7 @@ def main():
                                         piece = input()
                                     validMoves[i].promotion = piece
                                 state.movePiece(validMoves[i])
+                                makeStockfishMove(validMoves[i].getNotation())
                                 moveMade = True
                                 selected = ()
                                 clicks = []

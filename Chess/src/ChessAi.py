@@ -1,4 +1,5 @@
 from copy import deepcopy
+from stockfish import Stockfish
 import random
 import numpy as np
 weights = { 'p': 100, 'n': 280, 'b': 320, 'r': 479, 'q': 929, 'k': 60000, 'k_e': 60000 };
@@ -85,7 +86,23 @@ pst_d = {
     'k_e':np.flip(pst_l['k_e'])
 }
 
+stockfish = Stockfish(path="D:/AI Engines/Chess/stockfish/stockfish_15_x64_popcnt", depth=18)
+
 
 def getRandomMove(validMoves):
     return random.choice(validMoves)
-    
+
+def makeStockfishMove(move):
+    stockfish.make_moves_from_current_position([move])
+
+def getStockfishMove(validMoves):
+    st_move = stockfish.get_best_move()
+    move_to_do = None
+    for move in validMoves:
+        if move.getNotation() == st_move:
+            move_to_do = move
+            break
+
+    if move_to_do is not None:
+        makeStockfishMove(st_move)
+    return move_to_do

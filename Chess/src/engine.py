@@ -459,7 +459,7 @@ class Movement:
         return self.colsToFiles[c]+ self.rowsToRanks[r] 
 
     def getNotation(self):
-        return self.getRankFile(self.startRow, self.startCol) + self.getRankFile(self.endRow, self.endCol) + str(self) 
+        return self.getRankFile(self.startRow, self.startCol) + self.getRankFile(self.endRow, self.endCol) #+ str(self) 
     def __eq__(self, other):
         if isinstance(other, Movement):
             return self.moveID == other.moveID
