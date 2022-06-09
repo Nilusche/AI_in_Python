@@ -1,3 +1,3 @@
 # Ai in Python's Pygame
 
-Learning concepts of AI in gamebased approach.
+Learning concepts of AI as a gamebased approach.
