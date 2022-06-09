@@ -86,7 +86,7 @@ pst_d = {
     'k_e':np.flip(pst_l['k_e'])
 }
 
-stockfish = Stockfish(path="D:/AI Engines/Chess/stockfish/stockfish_15_x64_popcnt", depth=18)
+stockfish = Stockfish(path="D:/AI Engines/Chess/stockfish/stockfish_15_x64_popcnt", depth=20, parameters={"Threads": 2})
 
 
 def getRandomMove(validMoves):
@@ -105,4 +105,5 @@ def getStockfishMove(validMoves):
 
     if move_to_do is not None:
         makeStockfishMove(st_move)
+    print("move to do", move_to_do, st_move)
     return move_to_do

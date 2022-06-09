@@ -70,9 +70,17 @@ def drawCheck(win, state, inCheck):
             (r,c) = state.blackKingsPosition
         pygame.draw.rect(win,(245, 102, 66), (c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
-def drawGameState(win, state, paths, inCheck):
+def draw_last_move(win, move):
+    if move is None:
+        return
+    else:
+        pygame.draw.rect(win,(255, 245, 109), (move.startCol*SQ_SIZE, move.startRow*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+        pygame.draw.rect(win,(133,230,160), (move.endCol*SQ_SIZE, move.endRow*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
+def drawGameState(win, state, paths, inCheck, move):
     drawBoard(win)
     drawPaths(win, paths)
+    draw_last_move(win,move)
     drawCheck(win, state, inCheck)
     drawPieces(win, state.board)
     drawRanks(win, state.board)
@@ -96,6 +104,7 @@ def main():
    clicks = []
    paths = []
    inCheck = False
+   last_move = None
    while running: 
         ############################
         #AI Moves
@@ -104,6 +113,7 @@ def main():
             validMoves = state.getValidMoves()
             if len(validMoves)>0:
                 move = getStockfishMove(validMoves)
+                last_move = move
                 state.movePiece(move)
                 moveMade = True
             else: 
@@ -150,6 +160,7 @@ def main():
                                     validMoves[i].promotion = piece
                                 state.movePiece(validMoves[i])
                                 makeStockfishMove(validMoves[i].getNotation())
+                                last_move = move
                                 moveMade = True
                                 selected = ()
                                 clicks = []
@@ -169,13 +180,13 @@ def main():
         else:
             inCheck = False
         if state.gameOver:
-            drawGameState(win, state, paths, inCheck)
+            drawGameState(win, state, paths, inCheck, last_move)
             if state.stalemate:
                 draw_end(win,"Stalemate, Game ended")
             else:
                 draw_end(win, "Checkmate Game ended")
         else:
-            drawGameState(win, state, paths, inCheck)
+            drawGameState(win, state, paths, inCheck, last_move)
         
         clock.tick(FPS)
         pygame.display.flip()
