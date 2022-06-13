@@ -7,7 +7,7 @@ import pygame
 
 pygame.init()
 FONT = pygame.font.Font('freesansbold.ttf', 11)
-WIDTH = 400
+WIDTH =600
 ROWS = 8
 SQ_SIZE = WIDTH // ROWS
 FPS = 60
