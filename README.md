@@ -2,11 +2,15 @@
 
 Learning concepts of AI in Pygame.
 
-## Genetic Algorithm
+## Chess engine using different types of agents.
+I'm still working on tensorflows-neural-networks in chess.
+![chess](https://user-images.githubusercontent.com/73897941/175335271-b907cf17-6754-4690-8c93-c4c017c9456b.gif)
+
+## 8Queens Problem using Genetic Algorithm and Backtracking
 
 ![Gen_algorithm (1) (1)](https://user-images.githubusercontent.com/73897941/175332852-473c31ad-2cdc-475f-b7cc-b66d9b4518ee.gif)
 
-## Graph Search Problems
+## A*/BFS/DFS Graph Search Problems
 
 ![astar](https://user-images.githubusercontent.com/73897941/175330848-972b87f0-bf80-47b5-9f10-28197094e46e.gif)
 
