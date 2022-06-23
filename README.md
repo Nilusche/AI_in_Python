@@ -4,7 +4,7 @@ Learning concepts of AI in Pygame.
 
 ## Genetic Algorithm
 
-![gen_algo](https://user-images.githubusercontent.com/73897941/175332116-d5d7dfe2-dd18-4ebb-9a80-ba34d1fbf40e.gif)
+![Gen_algorithm (1) (1)](https://user-images.githubusercontent.com/73897941/175332852-473c31ad-2cdc-475f-b7cc-b66d9b4518ee.gif)
 
 
 ## Graph Search Problems
