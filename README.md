@@ -6,6 +6,10 @@ Learning concepts of AI in Pygame.
 
 ![Gen_algorithm (1) (1)](https://user-images.githubusercontent.com/73897941/175332852-473c31ad-2cdc-475f-b7cc-b66d9b4518ee.gif)
 
+## Tic Tac Toe Minimax Algorithm
+
+![tictactoe](https://user-images.githubusercontent.com/73897941/175334306-55fe140f-5366-4695-86f2-d581b0df755d.gif)
+
 
 ## Graph Search Problems
 
