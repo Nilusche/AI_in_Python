@@ -6,7 +6,7 @@ Learning concepts of AI in Pygame.
 I'm still working on tensorflows-neural-networks in chess. <br>
 ![chess](https://user-images.githubusercontent.com/73897941/175335271-b907cf17-6754-4690-8c93-c4c017c9456b.gif)
 
-## 8Queens Problem using Genetic Algorithm and Backtracking
+## 8 Queens Problem using Genetic Algorithm and Backtracking
 
 ![Gen_algorithm (1) (1)](https://user-images.githubusercontent.com/73897941/175332852-473c31ad-2cdc-475f-b7cc-b66d9b4518ee.gif)
 
