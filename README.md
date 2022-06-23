@@ -3,7 +3,7 @@
 Learning concepts of AI in Pygame.
 
 ## Chess engine using different types of agents.
-I'm still working on tensorflows-neural-networks in chess. <br>
+I'm still working on tensorflow-neural-networks in chess. <br>
 ![chess](https://user-images.githubusercontent.com/73897941/175335271-b907cf17-6754-4690-8c93-c4c017c9456b.gif)
 
 ## 8 Queens Problem using Genetic Algorithm and Backtracking
