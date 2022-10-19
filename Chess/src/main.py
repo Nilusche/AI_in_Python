@@ -110,6 +110,7 @@ def main():
         #AI Moves
         
         if not state.whiteToMove:
+            """
             validMoves = state.getValidMoves()
             if len(validMoves)>0:
                 move = getStockfishMove(validMoves)
@@ -117,9 +118,20 @@ def main():
                 state.movePiece(move)
                 moveMade = True
             else: 
+                state.gameOver= True
+            """
+             #get best move
+            validMoves = state.getValidMoves()
+            if len(validMoves)>0:
+                move = getBestMoveNegamax(deepcopy(state), validMoves)
+                last_move = move
+                state.movePiece(move)
+                moveMade = True
+            else:
                 state.gameOver= True
         
         else:
+            """
             validMoves = state.getValidMoves()
             if len(validMoves)>0:
                 move = getStockfishMove(validMoves)
@@ -128,6 +140,8 @@ def main():
                 moveMade = True
             else: 
                 state.gameOver= True
+            """
+           
         
         
         

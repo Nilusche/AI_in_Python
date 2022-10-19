@@ -2,6 +2,10 @@ from copy import deepcopy
 from stockfish import Stockfish
 import random
 import numpy as np
+import chess
+import chess.engine
+
+from engine import GameState
 weights = { 'p': 100, 'n': 280, 'b': 320, 'r': 479, 'q': 929, 'k': 60000, 'k_e': 60000 };
 pst_l = {
     'p':np.array([
@@ -86,6 +90,7 @@ pst_d = {
     'k_e':np.flip(pst_l['k_e'])
 }
 
+
 stockfish = Stockfish(path="../stockfish/stockfish_15_x64_popcnt.exe", depth=20, parameters={"Threads": 2})
 
 
@@ -107,3 +112,120 @@ def getStockfishMove(validMoves):
         makeStockfishMove(st_move)
     print("move to do", move_to_do, st_move)
     return move_to_do
+
+# minimax with alpha beta pruning for piece square tables
+def minimax(board, depth, alpha, beta, maximizingPlayer, validMoves):
+    if depth == 0:
+        return evaluateBoard(board)
+
+    if maximizingPlayer:
+        maxEval = -99999
+        for move in validMoves:
+            board.movePiece(move)
+            eval = minimax(board, depth - 1, alpha, beta, False, board.getValidMoves())
+            board.undoMove()
+            maxEval = max(maxEval, eval)
+            alpha = max(alpha, eval)
+            if beta <= alpha:
+                break
+        return maxEval
+    else:
+        minEval = 99999
+        for move in validMoves:
+            board.movePiece(move)
+            eval = minimax(board, depth - 1, alpha, beta, True, board.getValidMoves())
+            board.undoMove()
+            minEval = min(minEval, eval)
+            beta = min(beta, eval)
+            if beta <= alpha:
+                break
+        return minEval
+#evaluate board with piece square tables
+def evaluateBoard(board, pst=pst_d):
+    if board.gameOver:
+        if not board.whiteToMove:
+            return -9999
+        else:
+            return 9999
+
+    score = 0
+    for row in range(8):
+        for col in range(8):
+            piece = board.board[row][col]
+            if piece != "--":
+                if piece[1] == "d":
+                    score += pst[piece[0]][row][col]
+                else:
+                    score -= pst[piece[0]][7-row][col]   
+    return score
+    
+    
+def negamax(board, depth, alpha, beta, validMoves):
+    if depth == 0:
+        return evaluateBoard(board)
+
+    maxEval = -99999
+    for move in validMoves:
+        board.movePiece(move)
+        eval = -negamax(board, depth - 1, -beta, -alpha, board.getValidMoves())
+        board.undoMove()
+        maxEval = max(maxEval, eval)
+        alpha = max(alpha, eval)
+        if beta <= alpha:
+            break
+    return maxEval
+
+def getBestMove(state, validMoves):
+    bestMove = None
+    bestEval = -99999
+    for move in validMoves:
+        state.movePiece(move)
+        eval = minimax(state, 2, -99999, 99999, False, state.getValidMoves())
+        state.undoMove()
+        if eval > bestEval:
+            bestEval = eval
+            bestMove = move
+    return bestMove
+
+
+def monteCarlo(board, depth, iterations):
+    if depth == 0:
+        return evaluateBoard(board)
+
+    maxEval = -99999
+    for i in range(iterations):
+        if board.getValidMoves() == []:
+            break
+        board.movePiece(getRandomMove(board.getValidMoves()))
+        eval = monteCarlo(board, depth - 1, iterations)
+        board.undoMove()
+        maxEval = max(maxEval, eval)
+    return maxEval
+
+def getBestMoveMCTS(board, validMoves):
+    bestMove = None
+    bestEval = -99999
+    for move in validMoves:
+        board.movePiece(move)
+        eval = monteCarlo(board, 2, 50)
+        board.undoMove()
+        if eval > bestEval:
+            bestEval = eval
+            bestMove = move
+    return bestMove
+
+
+def getBestMoveNegamax(board, validMoves):
+    bestMove = None
+    bestEval = -99999
+    for move in validMoves:
+        board.movePiece(move)
+        eval = negamax(board, 2, -99999, 99999, board.getValidMoves())
+        board.undoMove()
+        if eval > bestEval:
+            bestEval = eval
+            bestMove = move
+    return bestMove
+
+
+
