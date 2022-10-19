@@ -3,7 +3,8 @@
 Learning concepts of AI in Pygame.
 
 ## Chess engine using different types of agents.
-I'm still working on tensorflow-neural-networks in chess. <br>
+Currently this agent can play using the minimax, negamax, monte carlo tree search or random algorithm.
+Im looking into implementing reinforcement learning just like in alphazero or using basic deep learning.
 ![chess](https://user-images.githubusercontent.com/73897941/175335271-b907cf17-6754-4690-8c93-c4c017c9456b.gif)
 
 ## 8 Queens Problem using Genetic Algorithm and Backtracking
