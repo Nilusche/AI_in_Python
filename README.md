@@ -3,7 +3,7 @@
 Learning concepts of AI in Pygame.
 
 ## Chess engine using different types of agents.
-Currently this agent can play using the minimax, negamax, monte carlo tree search or random algorithm.
+Currently this agent can play using the minimax, negamax, monte carlo tree search or random action selection.
 Im looking into implementing reinforcement learning just like in alphazero or using basic deep learning.
 ![chess](https://user-images.githubusercontent.com/73897941/175335271-b907cf17-6754-4690-8c93-c4c017c9456b.gif)
 
